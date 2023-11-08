@@ -1,2 +1,2 @@
 # Cyclesaster
-Un projet en collaboration avec Open Data University à propos de l'accidentologie des vélos
+A project in collaboration with Open Data University about cycling accidents
