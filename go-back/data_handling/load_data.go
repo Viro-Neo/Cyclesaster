@@ -12,27 +12,21 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func Load_data(rootDir string) error {
+func Load_data(db *sql.DB, rootDir string) error {
 	return filepath.Walk(rootDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 		if !info.IsDir() && strings.HasSuffix(info.Name(), ".csv") {
-			Load_file_data(path)
+			Load_file_data(db, path)
 		}
 		return nil
 	})
 }
 
-func Load_file_data(filename string) {
+func Load_file_data(db *sql.DB, filename string) {
 
 	fmt.Println("Loading data from", filename)
-	db, err := sql.Open("postgres", "user=postgres password=postgres dbname=cyclesaster_data sslmode=disable")
-	if err != nil {
-		fmt.Println("Error connecting to the database:", err)
-		return
-	}
-	defer db.Close()
 
 	csvFile, err := os.Open(filename)
 	if err != nil {
@@ -52,6 +46,10 @@ func Load_file_data(filename string) {
 	tableName, err := map_table_name(filename)
 	if err != nil {
 		fmt.Println(err)
+		return
+	}
+
+	if tableName != "characteristics" {
 		return
 	}
 
@@ -99,10 +97,10 @@ func map_table_name(filename string) (string, error) {
 	lowerInput := strings.ToLower(file)
 
 	nameMap := map[string]string{
-		"carcteristiques": "characteristics",
-		"lieux":           "places",
-		"usagers":         "users",
-		"vehicules":       "vehicles",
+		"caracteristiques": "characteristics",
+		"lieux":            "places",
+		"usagers":          "users",
+		"vehicules":        "vehicles",
 	}
 
 	for name, value := range nameMap {

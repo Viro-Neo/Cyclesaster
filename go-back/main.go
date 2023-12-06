@@ -1,7 +1,7 @@
 package main
 
 import (
-	"cyclesaster/data_handling"
+	"cyclesaster/database"
 	"cyclesaster/routers"
 	"fmt"
 
@@ -11,11 +11,14 @@ import (
 func main() {
 	router := gin.Default()
 
-	data_handling.Load_data("../Accidents/Accidents2005-2022")
+	db := database.InitDB()
+	defer db.Close()
+
+	//data_handling.Load_data(db, "../Accidents/Accidents2005-2022")
 
 	fmt.Println("Booting up server...")
 
-	routers.SetupRouter(router)
+	routers.SetupRouter(db, router)
 
 	router.Run(":8080")
 }
