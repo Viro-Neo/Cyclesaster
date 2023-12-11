@@ -4,13 +4,20 @@
     import 'leaflet/dist/leaflet.css';
 
     let map: L.Map;
+    let marker: L.Marker;
+
+    let franceCoordinates = [46.603354, 1.888334]; // Coordinates for the center of France
+    franceCoordinates = [48.81549976726981, 2.3629886954816546];
 
     onMount(() => {
-        map = L.map('map').setView([46.603354, 1.888334], 6); // Coordinates for the center of France
+        map = L.map('map').setView(franceCoordinates, 6); // Center the map on France
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
+
+        // Add a marker at the coordinates
+        marker = L.marker(franceCoordinates).addTo(map);
     });
 </script>
 
