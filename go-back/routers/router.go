@@ -19,4 +19,10 @@ func SetupRouter(db *sql.DB, router *gin.Engine) {
 	router.GET("/graph", func(c *gin.Context) {
 		handlers.GetGraphData(c, db)
 	})
+	router.GET("/get_filters", func(c *gin.Context) {
+		handlers.GetFilters(c, db)
+	})
+	router.GET("/get_filters_values", func(c *gin.Context) {
+		handlers.GetFiltersValues(c, db)
+	})
 }

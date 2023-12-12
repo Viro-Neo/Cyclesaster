@@ -3,9 +3,11 @@ package handlers
 import (
 	"database/sql"
 	"net/http"
+	"reflect"
 
 	"cyclesaster/database"
 	"cyclesaster/graph"
+	"cyclesaster/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,4 +32,35 @@ func GetGraphData(c *gin.Context, db *sql.DB) {
 	graphData := graph.ProcessDataForGraph(data, filter2)
 
 	c.JSON(http.StatusOK, gin.H{"data": graphData})
+}
+
+func GetFilters(c *gin.Context, db *sql.DB) {
+	filters := models.DataFilters{}
+
+	t := reflect.TypeOf(filters)
+
+	var fieldNames []string
+
+	for i := 0; i < t.NumField(); i++ {
+		fieldNames = append(fieldNames, t.Field(i).Name)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"filters": fieldNames})
+}
+
+func GetFiltersValues(c *gin.Context, db *sql.DB) {
+	filterName := c.Query("filter_name")
+
+	if filterName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "filter_name is required"})
+		return
+	}
+
+	filterValues, err := database.FetchFilterValuesFromDB(db, filterName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"filter_values": filterValues})
 }
