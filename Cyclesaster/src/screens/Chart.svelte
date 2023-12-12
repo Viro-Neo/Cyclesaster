@@ -1,6 +1,8 @@
+<!-- Chart.svelte -->
 <script lang="ts">
     import { onMount } from 'svelte';
     import Chart from 'chart.js/auto';
+    import { Link } from 'svelte-routing';
 
     export let tableData: { label: string; value: number }[];
 
@@ -37,13 +39,21 @@
 </script>
 
 <style>
-    /* Add styles as needed */
+    /* Set a specific height and width for the chart container */
     #chart-container {
-        width: 70lh;
-        height: 50vh;
+        width: 80%; /* Adjust the width as needed */
+        height: 400px; /* Adjust the height as needed */
+        margin: 0 auto; /* Center the container horizontally */
+    }
+
+    /* Ensure the canvas takes up the full size of its container */
+    canvas {
+        width: 100%;
+        height: 100%;
     }
 </style>
 
 <div id="chart-container">
     <canvas id="chart"></canvas>
+    <Link to="/map">Go to Map</Link>
 </div>
