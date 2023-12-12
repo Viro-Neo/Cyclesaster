@@ -1,6 +1,7 @@
 import csv
 import argparse
 import psycopg2
+import os
 from psycopg2 import sql
 
 DB_NAME = "cyclesaster_data"
@@ -163,11 +164,26 @@ def import_csv_data(filename, table_name):
             cursor.close()
             conn.close()
 
+def process_directory(directory):
+    for root, dirs, files in os.walk(directory):
+        for file_name in files:
+            file_path = os.path.join(root, file_name)
+            if file_name.endswith(".csv"):
+                if "caracteristiques" in file_name:
+                    table_name = "characteristics"
+                elif "lieux" in file_name:
+                    table_name = "area"
+                elif "vehicules" in file_name:
+                    table_name = "vehicles"
+                elif "usagers" in file_name:
+                    table_name = "users"
+                print("table name is {}".format(table_name))
+                #import_csv_data(file_path, table_name)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Export CSV data to Postgres database')
-    parser.add_argument('filename', type=str, help='CSV file path')
-    parser.add_argument('table_name', type=str, help='Table name')
+    parser.add_argument('directory', type=str, help='CSV file path')
 
     args = parser.parse_args()
 
-    import_csv_data(args.filename, args.table_name)
+    process_directory(args.directory)
