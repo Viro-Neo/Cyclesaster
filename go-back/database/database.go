@@ -36,9 +36,9 @@ func FetchDataFromDB(db *sql.DB, filter1Name, filter1Value string) ([]models.Dat
 	fmt.Println("Fetching data from DB")
 	var accidents []models.DataFilters
 
-	query := fmt.Sprintf("SELECT c.accident_id, c.department, u.birth_year FROM characteristics c "+
+	query := fmt.Sprintf("SELECT c.accident_id, c.department, c.year FROM characteristics c "+
 		"JOIN users u ON c.accident_id = u.accident_id "+
-		"WHERE a.%s = $1", filter1Name)
+		"WHERE c.%s = $1", filter1Name)
 
 	rows, err := db.Query(query, filter1Value)
 
@@ -47,9 +47,11 @@ func FetchDataFromDB(db *sql.DB, filter1Name, filter1Value string) ([]models.Dat
 	}
 	defer rows.Close()
 
+	fmt.Println("rows are ", rows)
+
 	for rows.Next() {
 		var accident models.DataFilters
-		err := rows.Scan(&accident.Id, &accident.Departement, &accident.Birth_year)
+		err := rows.Scan(&accident.Id, &accident.Department, &accident.Year)
 		if err != nil {
 			return nil, err
 		}
@@ -75,12 +77,12 @@ func FetchFilterValuesFromDB(db *sql.DB, filterName string) ([]string, error) {
 		}
 
 		for rows.Next() {
-			var value sql.NullString // Change this line
+			var value sql.NullString
 			err := rows.Scan(&value)
 			if err != nil {
 				return nil, err
 			}
-			if value.Valid && !containsString(filterValues, value.String) { // Check if the value is valid before using it
+			if value.Valid && !containsString(filterValues, value.String) {
 				filterValues = append(filterValues, value.String)
 			}
 		}
