@@ -7,7 +7,7 @@ type DataFilters struct {
 	Year        string
 	Birth_year  string
 	Departement string
-	Sexe        string
+	Gender      string
 	Road        string
 }
 
