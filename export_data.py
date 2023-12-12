@@ -178,7 +178,7 @@ def process_directory(directory):
                 elif "usagers" in file_name:
                     table_name = "users"
                 print("table name is {}".format(table_name))
-                #import_csv_data(file_path, table_name)
+                import_csv_data(file_path, table_name)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Export CSV data to Postgres database')
