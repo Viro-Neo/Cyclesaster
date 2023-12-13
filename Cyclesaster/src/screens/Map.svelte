@@ -7,7 +7,7 @@
 
     let map: L.Map;
     let marker: L.Marker;
-    let selectedFilter = '';
+    let selectedFilter = ['Both', 'France center', 'Epitech Paris']; // Default selected filter
     const dispatch = createEventDispatcher();
     let franceCoordinates = [46.603354, 1.888334]; // Coordinates for the center of France
     let epitechCoordinates = [48.81549976726981, 2.3629886954816546];
