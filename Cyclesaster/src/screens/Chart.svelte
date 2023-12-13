@@ -42,7 +42,7 @@
     /* Set a specific height and width for the chart container */
     #chart-container {
         width: 80%; /* Adjust the width as needed */
-        height: 400px; /* Adjust the height as needed */
+        height: 30lh; /* Adjust the height as needed */
         margin: 0 auto; /* Center the container horizontally */
     }
 
