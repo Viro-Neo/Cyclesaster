@@ -26,3 +26,20 @@ func ProcessDataForGraph(data []models.DataFilters, filter2 string) interface{} 
 	}
 	return dataDistribution
 }
+
+func ProcessDataForMap(data []models.DataFilters) interface{} {
+	fmt.Println("Processing data for map")
+	mapData := make([]models.MapData, len(data))
+
+	for i, accident := range data {
+		fmt.Println("accident is ", accident)
+		mapData[i] = models.MapData{
+			Id:        accident.Id,
+			Latitude:  accident.Latitude,
+			Longitude: accident.Longitude,
+		}
+	}
+
+	return mapData
+
+}

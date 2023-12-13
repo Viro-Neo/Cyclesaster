@@ -57,7 +57,8 @@ func mapFilterNameToDBName(filterName string) string {
 func buildDynamicQuery(filter1Name string) string {
 	f1 := mapFilterNameToDBName(filter1Name)
 	query := fmt.Sprintf("SELECT c.accident_id, c.month, c.year, "+
-		"u.birth_year, c.department, u.gender, a.surface, a.infrastructure, a.traffic "+
+		"u.birth_year, c.department, u.gender, a.surface, a.infrastructure, a.traffic, "+
+		"c.latitude, c.longitude "+
 		"FROM characteristics c "+
 		"JOIN users u ON c.accident_id = u.accident_id "+
 		"JOIN area a ON c.accident_id = a.accident_id "+
@@ -73,9 +74,11 @@ func scanRows(rows *sql.Rows) ([]models.DataFilters, error) {
 	for rows.Next() {
 		var accident models.DataFilters
 		var id, month, year, birth_year, department, gender, surface, infrastructure, trafic sql.NullString
+		var latitude, longitude sql.NullFloat64
 		err := rows.Scan(&id, &month, &year, &birth_year, &department, &gender,
-			&surface, &infrastructure, &trafic)
+			&surface, &infrastructure, &trafic, &latitude, &longitude)
 		if err != nil {
+			fmt.Println("error is ", err)
 			return nil, err
 		}
 
@@ -112,7 +115,14 @@ func scanRows(rows *sql.Rows) ([]models.DataFilters, error) {
 		if trafic.Valid {
 			accident.Trafic = trafic.String
 		}
+		if latitude.Valid {
+			accident.Latitude = latitude.Float64
+		}
+		if longitude.Valid {
+			accident.Longitude = longitude.Float64
+		}
 
+		fmt.Println("adding accident ", accident)
 		accidents = append(accidents, accident)
 	}
 

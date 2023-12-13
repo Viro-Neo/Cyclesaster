@@ -25,4 +25,7 @@ func SetupRouter(db *sql.DB, router *gin.Engine) {
 	router.GET("/get_filters_values", func(c *gin.Context) {
 		handlers.GetFiltersValues(c, db)
 	})
+	router.GET("/map", func(c *gin.Context) {
+		handlers.GetMapData(c, db)
+	})
 }

@@ -12,6 +12,27 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func GetMapData(c *gin.Context, db *sql.DB) {
+	filterName := c.Query("filter_name")
+	filterValue := c.Query("filter_value")
+
+	if filterName == "" || filterValue == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "filter_name and filter_value are required"})
+		return
+	}
+
+	data, err := database.FetchDataFromDB(db, filterName, filterValue)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	mapData := graph.ProcessDataForMap(data)
+
+	c.JSON(http.StatusOK, gin.H{"data": mapData})
+
+}
+
 func GetGraphData(c *gin.Context, db *sql.DB) {
 
 	filter1Name := c.Query("filter1_name")
