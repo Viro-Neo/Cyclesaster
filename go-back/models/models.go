@@ -11,4 +11,12 @@ type DataFilters struct {
 	Surface        string
 	Infrastructure string
 	Trafic         string
+	Latitude       float64
+	Longitude      float64
+}
+
+type MapData struct {
+	Id        int
+	Latitude  float64
+	Longitude float64
 }
