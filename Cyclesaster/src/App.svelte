@@ -1,16 +1,12 @@
 <script lang="ts">
-    import Map from './lib/Map.svelte';
-    import Chart from './lib/Chart.svelte';
-
-    const tableData = [
-        { label: 'A', value: 10 },
-        { label: 'B', value: 20 },
-        { label: 'C', value: 15 },
-        // Add more data as needed
-    ];
+    import { Router, Route } from 'svelte-routing';
+    import LandingPage from './screens/Home.svelte';
+    import Map from './screens/Map.svelte';
+    import Chart from './screens/Chart.svelte';
 </script>
 
-<div>
-    <Chart {tableData} />
-    <Map />
-</div>
+<Router>
+    <Route path="/" component={LandingPage} />
+    <Route path="/map" component={Map} />
+    <Route path="/chart" component={Chart} />
+</Router>
