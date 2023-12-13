@@ -28,4 +28,7 @@ func SetupRouter(db *sql.DB, router *gin.Engine) {
 	router.GET("/map", func(c *gin.Context) {
 		handlers.GetMapData(c, db)
 	})
+	router.GET("/get_accident", func(c *gin.Context) {
+		handlers.GetAccident(c, db)
+	})
 }

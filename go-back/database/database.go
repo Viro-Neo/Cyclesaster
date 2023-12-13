@@ -183,6 +183,36 @@ func FetchFilterValuesFromDB(db *sql.DB, filterName string) ([]string, error) {
 	return filterValues, nil
 }
 
+func FetchAccidentFromDB(db *sql.DB, accident_id int) (models.DataFilters, error) {
+	var accident models.DataFilters
+
+	query := fmt.Sprintf("SELECT c.accident_id, c.month, c.year, "+
+		"u.birth_year, c.department, u.gender, a.surface, a.infrastructure, a.traffic, "+
+		"c.latitude, c.longitude "+
+		"FROM characteristics c "+
+		"JOIN users u ON c.accident_id = u.accident_id "+
+		"JOIN area a ON c.accident_id = a.accident_id "+
+		"JOIN vehicles v ON c.accident_id = v.accident_id "+
+		"WHERE c.accident_id = %d", accident_id)
+
+	fmt.Println("query is ", query)
+
+	row, err := db.Query(query)
+
+	if err != nil {
+		return accident, err
+	}
+	defer row.Close()
+
+	accidents, _ := scanRows(row)
+
+	if len(accidents) > 0 {
+		accident = accidents[0]
+	}
+
+	return accident, nil
+}
+
 func containsString(slice []string, target string) bool {
 	for _, s := range slice {
 		if s == target {

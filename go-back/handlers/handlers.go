@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 	"reflect"
+	"strconv"
 
 	"cyclesaster/database"
 	"cyclesaster/graph"
@@ -84,4 +85,28 @@ func GetFiltersValues(c *gin.Context, db *sql.DB) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"filter_values": filterValues})
+}
+
+func GetAccident(c *gin.Context, db *sql.DB) {
+	accidentId := c.Query("accident_id")
+
+	if accidentId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "accident_id is required"})
+		return
+	}
+
+	id, err := strconv.Atoi(accidentId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "accident_id must be an integer"})
+		return
+	}
+
+	accident, err := database.FetchAccidentFromDB(db, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"accident": accident})
 }
