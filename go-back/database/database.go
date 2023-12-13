@@ -4,6 +4,7 @@ import (
 	"cyclesaster/models"
 	"database/sql"
 	"fmt"
+	"strconv"
 
 	_ "github.com/lib/pq"
 )
@@ -31,14 +32,101 @@ func InitDB() *sql.DB {
 	return db
 }
 
+func mapFilterNameToDBName(filterName string) string {
+	if filterName == "Birth_year" {
+		return "u.birth_year"
+	} else if filterName == "Department" {
+		return "c.department"
+	} else if filterName == "Month" {
+		return "c.month"
+	} else if filterName == "Year" {
+		return "c.year"
+	} else if filterName == "Gender" {
+		return "u.gender"
+	} else if filterName == "Surface" {
+		return "a.surface"
+	} else if filterName == "Infrastructure" {
+		return "a.infrastructure"
+	} else if filterName == "Traffic" {
+		return "a.traffic"
+	}
+
+	return ""
+}
+
+func buildDynamicQuery(filter1Name string) string {
+	f1 := mapFilterNameToDBName(filter1Name)
+	query := fmt.Sprintf("SELECT c.accident_id, c.month, c.year, "+
+		"u.birth_year, c.department, u.gender, a.surface, a.infrastructure, a.traffic "+
+		"FROM characteristics c "+
+		"JOIN users u ON c.accident_id = u.accident_id "+
+		"JOIN area a ON c.accident_id = a.accident_id "+
+		"JOIN vehicles v ON c.accident_id = v.accident_id "+
+		"WHERE %s = $1", f1)
+
+	return query
+}
+
+func scanRows(rows *sql.Rows) ([]models.DataFilters, error) {
+	var accidents []models.DataFilters
+
+	for rows.Next() {
+		var accident models.DataFilters
+		var id, month, year, birth_year, department, gender, surface, infrastructure, trafic sql.NullString
+		err := rows.Scan(&id, &month, &year, &birth_year, &department, &gender,
+			&surface, &infrastructure, &trafic)
+		if err != nil {
+			return nil, err
+		}
+
+		if id.Valid {
+			accident.Id, _ = strconv.Atoi(id.String)
+		}
+		if month.Valid {
+			accident.Month = month.String
+		}
+		if year.Valid {
+			accident.Year = year.String
+		}
+		if birth_year.Valid {
+			accident.Birth_year = birth_year.String
+		}
+		if department.Valid {
+			if department.String == "201" {
+				accident.Department = "2A"
+			} else if department.String == "202" {
+				accident.Department = "2B"
+			} else {
+				accident.Department = department.String
+			}
+		}
+		if gender.Valid {
+			accident.Gender = gender.String
+		}
+		if surface.Valid {
+			accident.Surface = surface.String
+		}
+		if infrastructure.Valid {
+			accident.Infrastructure = infrastructure.String
+		}
+		if trafic.Valid {
+			accident.Trafic = trafic.String
+		}
+
+		accidents = append(accidents, accident)
+	}
+
+	return accidents, nil
+}
+
 func FetchDataFromDB(db *sql.DB, filter1Name, filter1Value string) ([]models.DataFilters, error) {
 
 	fmt.Println("Fetching data from DB")
 	var accidents []models.DataFilters
 
-	query := fmt.Sprintf("SELECT c.accident_id, c.department, c.year FROM characteristics c "+
-		"JOIN users u ON c.accident_id = u.accident_id "+
-		"WHERE c.%s = $1", filter1Name)
+	query := buildDynamicQuery(filter1Name)
+
+	fmt.Println("query is ", query)
 
 	rows, err := db.Query(query, filter1Value)
 
@@ -49,14 +137,7 @@ func FetchDataFromDB(db *sql.DB, filter1Name, filter1Value string) ([]models.Dat
 
 	fmt.Println("rows are ", rows)
 
-	for rows.Next() {
-		var accident models.DataFilters
-		err := rows.Scan(&accident.Id, &accident.Department, &accident.Year)
-		if err != nil {
-			return nil, err
-		}
-		accidents = append(accidents, accident)
-	}
+	accidents, _ = scanRows(rows)
 
 	return accidents, nil
 
