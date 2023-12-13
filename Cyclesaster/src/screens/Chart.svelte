@@ -4,43 +4,21 @@
     import Chart from 'chart.js/auto';
     import { Link } from 'svelte-routing';
 
+    let selectedFilter = ['all', 'A', 'B', 'C', 'D', 'E'];
+
     const tableData = [
-        { year: '2019', month: 'Jan', value: 10 },
-        { year: '2019', month: 'Feb', value: 20 },
-        { year: '2019', month: 'Mar', value: 30 },
-        { year: '2019', month: 'Apr', value: 40 },
-        { year: '2019', month: 'May', value: 50 },
-        { year: '2019', month: 'Jun', value: 60 },
-        { year: '2019', month: 'Jul', value: 70 },
-        { year: '2019', month: 'Aug', value: 80 },
-        { year: '2019', month: 'Sep', value: 90 },
-        { year: '2019', month: 'Oct', value: 100 },
-        { year: '2019', month: 'Nov', value: 110 },
-        { year: '2019', month: 'Dec', value: 120 },
-        { year: '2020', month: 'Jan', value: 130 },
-        { year: '2020', month: 'Feb', value: 140 },
-        { year: '2020', month: 'Mar', value: 150 },
-        { year: '2020', month: 'Apr', value: 160 },
-        { year: '2020', month: 'May', value: 170 },
-        { year: '2020', month: 'Jun', value: 180 },
-        { year: '2020', month: 'Jul', value: 190 },
-        { year: '2020', month: 'Aug', value: 200 },
-        { year: '2020', month: 'Sep', value: 210 },
-        { year: '2020', month: 'Oct', value: 220 },
-        { year: '2020', month: 'Nov', value: 230 },
-        { year: '2020', month: 'Dec', value: 240 },
-        { year: '2021', month: 'Jan', value: 250 },
-        { year: '2021', month: 'Feb', value: 260 },
-        { year: '2021', month: 'Mar', value: 270 },
-        { year: '2021', month: 'Apr', value: 280 }
+        { name: 'A', value: 10 },
+        { name: 'B', value: 20 },
+        { name: 'C', value: 30 },
+        { name: 'D', value: 40 },
+        { name: 'E', value: 50 },
         // Add more data as needed
     ];
 
     let chart: Chart;
-    let firstFilter = '';
-    let secondFilter = '';
-    let labels: string[] = [];
-    let values: number[] = [];
+    const labels = tableData.map((d) => d.name);
+    const values = tableData.map((d) => d.value);
+    console.log(labels, values);
 
     onMount(() => {
         const ctx = document.getElementById('chart');
@@ -56,7 +34,7 @@
                             backgroundColor: 'rgba(54, 162, 235, 0.5)', // Adjust color as needed
                             borderColor: 'rgba(54, 162, 235, 1)', // Adjust color as needed
                             borderWidth: 1,
-                        },
+                        }
                     ],
                 },
                 options: {
@@ -77,33 +55,74 @@
         margin: 0 auto; /* Center the container horizontally */
     }
 
-    /* Ensure the canvas takes up the full size of its container */
-    canvas {
-        width: 100%;
-        height: 100%;
+    /* Add this CSS to position the filters */
+    .filter-container {
+        display: flex;
+        align-items: flex-start;
+        width: 50%;
+        margin: 0 auto;
+        border: 0 solid black;
+        flex-wrap: wrap; /* Allow items to wrap to the next line */
     }
+
+    .filter {
+        width: 10%; /* Adjust the width as needed */
+        border: 0 solid black;
+        margin: 5px 0; /* Adjust margin for spacing */
+    }
+
+    .filter-left {
+        text-align: left;
+        border: 0 solid black;
+    }
+
+    .filter-right {
+        text-align: right;
+        width: 80%; /* Adjust width for the right filter */
+    }
+
 </style>
 
+<!-- Chart.svelte -->
 <div id="chart-container">
-    <div>
-        <label for="first-filter">First Filter:</label>
-        <select id="first-filter" bind:value={firstFilter}>
+    <canvas id="chart"></canvas>
+    <Link to="/map">Go to Map</Link>
+</div>
+
+<div class="filter-container">
+    <div class="filter filter-left">
+        <select bind:value={selectedFilter}>
             <option value="all">All</option>
             <option value="A">A</option>
             <option value="B">B</option>
-            <!-- Add more options as needed -->
-        </select>
-    </div>
-    <div>
-        <label for="second-filter">Second Filter:</label>
-        <select id="second-filter" bind:value={secondFilter}>
-            <option value="all">All</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <!-- Add more options as needed -->
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="E">E</option>
+            <!-- Add more filter options as needed -->
         </select>
     </div>
 
-    <canvas id="chart"></canvas>
-    <Link to="/map">Go to Map</Link>
+    <div class="filter filter-left">
+        <select bind:value={selectedFilter}>
+            <option value="all">All</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="E">E</option>
+            <!-- Add more filter options as needed -->
+        </select>
+    </div>
+
+    <div class="filter filter-right">
+        <select bind:value={selectedFilter}>
+            <option value="all">All</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="E">E</option>
+            <!-- Add more filter options as needed -->
+        </select>
+    </div>
 </div>

@@ -90,17 +90,6 @@
         padding: 20px; /* Add padding for spacing */
     }
 
-    /* Style the link/button */
-    .go-to-chart {
-        display: block; /* Ensure the link/button behaves as a block element */
-        background-color: #f0f0f0;
-        padding: 10px 20px;
-        border-radius: 5px;
-        text-decoration: none;
-        color: #333;
-        margin-bottom: 20px; /* Add margin for spacing between buttons */
-    }
-
     .filter-container {
         width: 30%; /* Adjust width as needed */
         float: right; /* Position the filter container to the right */
@@ -112,7 +101,7 @@
 </div>
 
 <div class="button-container">
-    <Link to="/chart" class="go-to-chart">Go to Chart</Link>
+    <Link to="/chart">Go to Chart</Link>
     <!-- Add more buttons/links as needed -->
 </div>
 
