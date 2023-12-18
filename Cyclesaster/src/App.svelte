@@ -1,8 +1,8 @@
 <script lang="ts">
     import { Router, Route } from 'svelte-routing';
     import LandingPage from './screens/Home.svelte';
-    import Map from './screens/Map.svelte';
-    import Chart from './screens/Chart.svelte';
+    import Map from './screens/Map/Map.svelte';
+    import Chart from './screens/Chart/Chart.svelte';
 </script>
 
 <Router>

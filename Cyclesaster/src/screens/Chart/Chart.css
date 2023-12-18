@@ -1,0 +1,25 @@
+/* Set a specific height and width for the chart container */
+#chart-container {
+    width: 80%; /* Adjust the width as needed */
+    height: 30lh; /* Adjust the height as needed */
+    margin: 0 auto; /* Center the container horizontally */
+}
+
+/* Add this CSS to position the filters */
+.filter-container {
+    display: flex;
+    justify-content: space-between;
+    width: 50%;
+    margin: 0 auto;
+    border: 1px solid black;
+}
+
+.first-filter {
+    position: relative;
+    margin: 10px;
+}
+
+.second-filter {
+    position: relative;
+    margin: 10px;
+}
