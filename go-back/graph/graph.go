@@ -21,7 +21,18 @@ func ProcessDataForGraph(data []models.DataFilters, filter2 string) interface{} 
 			dataDistribution[accident.Department]++
 		case "Year":
 			dataDistribution[accident.Year]++
-			// More cases to be added later
+		case "Month":
+			dataDistribution[accident.Month]++
+		case "Day":
+			dataDistribution[accident.Day]++
+		case "Gender":
+			dataDistribution[accident.Gender]++
+		case "Surface":
+			dataDistribution[accident.Surface]++
+		case "Infrastructure":
+			dataDistribution[accident.Infrastructure]++
+		case "Trafic":
+			dataDistribution[accident.Trafic]++
 		}
 	}
 	return dataDistribution
