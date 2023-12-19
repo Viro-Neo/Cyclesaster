@@ -13,7 +13,7 @@ DB_PORT = 5432
 CSV_FILE_PATH = "data.csv"
 
 COLUMN_MAPPING_CHARACTERISTICS = {
-    "Accident_id": ('accident_id', 'bigint'),
+    "Num_Acc": ('accident_id', 'bigint'),
     "jour": ('day', 'int'),
     "mois": ('month', 'int'),
     "an": ('short_year', 'int'),
@@ -119,8 +119,8 @@ def import_csv_data(filename, table_name):
             elif table_name == "users":
                 column_mapping = COLUMN_MAPPING_USERS
 
-            print(column_mapping)
-            print(column_mapping.get("surf", "surf"))
+            #print(column_mapping)
+            #print(column_mapping.get("surf", "surf"))
 
             create_table_query = sql.SQL("CREATE TABLE IF NOT EXISTS {} ({}, year INTEGER)").format(
                 sql.Identifier(table_name),
@@ -134,7 +134,7 @@ def import_csv_data(filename, table_name):
             )
             print(create_table_query.as_string(conn))
             cursor.execute(create_table_query)
-            print("Table created")
+            print("Table created " + table_name)
 
             insert_query = sql.SQL("INSERT INTO {} ({}, year) VALUES ({}, %s)").format(
                 sql.Identifier(table_name),
@@ -169,7 +169,8 @@ def process_directory(directory):
         for file_name in files:
             file_path = os.path.join(root, file_name)
             if file_name.endswith(".csv"):
-                if "caracteristiques" in file_name:
+                table_name = ""
+                if "carcteristiques" in file_name or "caracteristiques" in file_name:
                     table_name = "characteristics"
                 elif "lieux" in file_name:
                     table_name = "area"
@@ -177,7 +178,6 @@ def process_directory(directory):
                     table_name = "vehicles"
                 elif "usagers" in file_name:
                     table_name = "users"
-                print("table name is {}".format(table_name))
                 import_csv_data(file_path, table_name)
 
 if __name__ == "__main__":
