@@ -13,7 +13,7 @@ DB_PORT = 5432
 CSV_FILE_PATH = "data.csv"
 
 COLUMN_MAPPING_CHARACTERISTICS = {
-    "Num_Acc": ('accident_id', 'bigint'),
+    "Accident_id": ('accident_id', 'bigint'),
     "jour": ('day', 'int'),
     "mois": ('month', 'int'),
     "an": ('short_year', 'int'),
