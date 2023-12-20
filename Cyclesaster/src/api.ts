@@ -3,11 +3,11 @@ import { API_URL } from "../config";
 
 const axiosInstance = axios.create({
     baseURL: API_URL,
-    timeout: 5000,
 });
 
 export interface ApiResponse {
     filters: string[],
+    filter_values: string[],
 }
 
 export const fetchData = async (path: string): Promise<ApiResponse> => {
@@ -18,3 +18,11 @@ export const fetchData = async (path: string): Promise<ApiResponse> => {
         throw new Error(`API Error: ${error}`);
     }
 };
+
+export const fetchFilters = async (): Promise<ApiResponse> => {
+    return await fetchData('/get_filters');
+}
+
+export const fetchFiltersValues = async (filter: string): Promise<ApiResponse> => {
+    return await fetchData(`/get_filters_values?filter_name=${filter}`);
+}

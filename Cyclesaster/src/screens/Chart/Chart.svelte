@@ -2,9 +2,10 @@
     import { onMount } from 'svelte';
     import Chart from 'chart.js/auto';
     import { Link } from 'svelte-routing';
-    import { fetchData, type ApiResponse } from "../../api";
+    import { type ApiResponse, fetchFilters, fetchFiltersValues } from "../../api";
 
     let filtersApi: ApiResponse;
+    let filtersApi2: ApiResponse;
     let filtersName: string[] = [];
     let filtersValue: string[] = [];
     let selectedFilter: string = '';
@@ -12,35 +13,48 @@
     let selectedFilter3: string = '';
 
     const tableData = [
-        { name: 'A', value: 10 },
-        { name: 'B', value: 20 },
-        { name: 'C', value: 30 },
-        { name: 'D', value: 40 },
-        { name: 'E', value: 50 },
+        // { name: 'A', value: 10 },
+        // { name: 'B', value: 20 },
+        // { name: 'C', value: 30 },
+        // { name: 'D', value: 40 },
+        // { name: 'E', value: 50 },
     ];
 
     let chart: Chart;
-    const labels = tableData.map((d) => d.name);
-    const values = tableData.map((d) => d.value);
+    // const labels = tableData.map((d) => d.name);
+    // const values = tableData.map((d) => d.value);
 
-    onMount(async () => {
+    async function handleFilterValue() {
         try {
-            filtersApi = await fetchData('/get_filters');
-            console.log(filtersApi);
+            filtersApi2 = await fetchFiltersValues(selectedFilter);
+            filtersValue = filtersApi2.filter_values;
         } catch (error) {
             console.log(error);
         }
-        filtersName = filtersApi.filters;
+        return filtersApi;
+    }
+
+    async function handleFilter() {
+        try {
+            filtersApi = await fetchFilters();
+            filtersName = filtersApi.filters;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    onMount(async () => {
+        await handleFilter();
         const ctx = document.getElementById('chart');
         if (ctx) {
             chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels,
+                    // labels,
                     datasets: [
                         {
                             label: 'Chart Data',
-                            data: values,
+                            // data: values,
                             backgroundColor: 'rgba(54, 162, 235, 0.5)', // Adjust color as needed
                             borderColor: 'rgba(54, 162, 235, 1)', // Adjust color as needed
                             borderWidth: 1,
@@ -54,6 +68,10 @@
             });
         }
     });
+
+    $: if (selectedFilter) {
+        handleFilterValue();
+    }
 </script>
 
 <div id="chart-container">
@@ -75,7 +93,7 @@
         <div >
             <select bind:value={ selectedFilter2 }>
                 <option value="">Select the filter's value</option>
-                { #each filtersName as filter }
+                { #each filtersValue as filter }
                     <option value={ filter }>{ filter }</option>
                 { /each }
             </select>
