@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strconv"
+	"strings"
 
 	_ "github.com/lib/pq"
 )
@@ -174,7 +175,12 @@ func FetchFilterValuesFromDB(db *sql.DB, filterName string) ([]string, error) {
 				return nil, err
 			}
 			if value.Valid && !containsString(filterValues, value.String) {
-				filterValues = append(filterValues, value.String)
+				if !strings.HasPrefix(value.String, "0") {
+					originalstr := "0" + value.String
+					if !containsString(filterValues, originalstr) {
+						filterValues = append(filterValues, originalstr)
+					}
+				}
 			}
 		}
 		rows.Close()
