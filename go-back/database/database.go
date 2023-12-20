@@ -178,7 +178,7 @@ func FetchFilterValuesFromDB(db *sql.DB, filterName string) ([]string, error) {
 				if !strings.HasPrefix(value.String, "0") {
 					originalstr := "0" + value.String
 					if !containsString(filterValues, originalstr) {
-						filterValues = append(filterValues, originalstr)
+						filterValues = append(filterValues, value.String)
 					}
 				} else {
 					filterValues = append(filterValues, value.String)

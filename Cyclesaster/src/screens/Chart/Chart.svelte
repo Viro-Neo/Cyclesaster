@@ -2,9 +2,8 @@
     import { onMount } from 'svelte';
     import Chart from 'chart.js/auto';
     import { Link } from 'svelte-routing';
-    import { type ApiResponse, fetchFilters, fetchFiltersValues } from "../../api";
+    import { type ApiResponse, handleFilter, fetchFiltersValues, fetchGraphData } from '../../api';
 
-    let filtersApi: ApiResponse;
     let filtersApi2: ApiResponse;
     let filtersName: string[] = [];
     let filtersValue: string[] = [];
@@ -12,17 +11,12 @@
     let selectedFilter2: string = '';
     let selectedFilter3: string = '';
 
-    const tableData = [
-        // { name: 'A', value: 10 },
-        // { name: 'B', value: 20 },
-        // { name: 'C', value: 30 },
-        // { name: 'D', value: 40 },
-        // { name: 'E', value: 50 },
-    ];
+    let tableData: Object;
+    let tableArray: [string, any][] = [];
 
     let chart: Chart;
-    // const labels = tableData.map((d) => d.name);
-    // const values = tableData.map((d) => d.value);
+    const labels: string[] = [];
+    const values: number[] = [];
 
     async function handleFilterValue() {
         try {
@@ -31,47 +25,59 @@
         } catch (error) {
             console.log(error);
         }
-        return filtersApi;
     }
 
-    async function handleFilter() {
+    export async function handleGraphRequest(selectedFilter: string, selectedFilter2: string, selectedFilter3: string) {
         try {
-            filtersApi = await fetchFilters();
-            filtersName = filtersApi.filters;
+            const filterApi = await fetchGraphData(selectedFilter, selectedFilter2, selectedFilter3);
+            const ctx = document.getElementById('chart');
+
+            tableData = filterApi.data;
+            tableArray = Object.entries(tableData);
+            tableArray.forEach((item) => {
+                labels.push(item[0]);
+                values.push(item[1]);
+            });
+            if (ctx) {
+                chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label: 'Chart Data',
+                                data: values,
+                                backgroundColor: 'rgba(54, 162, 235, 0.5)', // Adjust color as needed
+                                borderColor: 'rgba(54, 162, 235, 1)', // Adjust color as needed
+                                borderWidth: 1,
+                            }
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                    },
+                });
+            }
         } catch (error) {
             console.log(error);
         }
     }
 
     onMount(async () => {
-        await handleFilter();
-        const ctx = document.getElementById('chart');
-        if (ctx) {
-            chart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    // labels,
-                    datasets: [
-                        {
-                            label: 'Chart Data',
-                            // data: values,
-                            backgroundColor: 'rgba(54, 162, 235, 0.5)', // Adjust color as needed
-                            borderColor: 'rgba(54, 162, 235, 1)', // Adjust color as needed
-                            borderWidth: 1,
-                        }
-                    ],
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                },
-            });
-        }
+        filtersName = await handleFilter(filtersName);
     });
 
-    $: if (selectedFilter) {
-        handleFilterValue();
+    $: {
+        if (selectedFilter) {
+            handleFilterValue();
+        }
+
+        if (selectedFilter && selectedFilter2 && selectedFilter3) {
+            handleGraphRequest(selectedFilter, selectedFilter2, selectedFilter3);
+        }
     }
+
 </script>
 
 <div id="chart-container">
