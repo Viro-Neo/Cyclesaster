@@ -5,7 +5,8 @@
     import { fetchData, type ApiResponse } from "../../api";
 
     let filtersApi: ApiResponse;
-    let filters: string[] = [];
+    let filtersName: string[] = [];
+    let filtersValue: string[] = [];
     let selectedFilter: string = '';
     let selectedFilter2: string = '';
     let selectedFilter3: string = '';
@@ -29,7 +30,7 @@
         } catch (error) {
             console.log(error);
         }
-        filters = filtersApi.filters;
+        filtersName = filtersApi.filters;
         const ctx = document.getElementById('chart');
         if (ctx) {
             chart = new Chart(ctx, {
@@ -64,7 +65,8 @@
     <div class="first-filter">
         <div >
             <select bind:value={ selectedFilter }>
-                { #each filters as filter }
+                <option value="">Select a filter</option>
+                { #each filtersName as filter }
                     <option value={ filter }>{ filter }</option>
                 { /each }
             </select>
@@ -72,7 +74,8 @@
 
         <div >
             <select bind:value={ selectedFilter2 }>
-                { #each filters as filter }
+                <option value="">Select the filter's value</option>
+                { #each filtersName as filter }
                     <option value={ filter }>{ filter }</option>
                 { /each }
             </select>
@@ -81,7 +84,8 @@
 
     <div class="second-filter">
         <select bind:value={ selectedFilter3 }>
-            { #each filters as filter }
+            <option value="">Select a filter</option>
+            { #each filtersName as filter }
                 <option value={ filter }>{ filter }</option>
             { /each }
         </select>
