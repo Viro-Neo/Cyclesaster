@@ -1,4 +1,4 @@
-import axios, { type AxiosResponse, type AxiosRequestConfig } from 'axios';
+import axios, { type AxiosResponse } from 'axios';
 import { API_URL } from "../config";
 
 const axiosInstance = axios.create({
