@@ -3,21 +3,74 @@
     import L from 'leaflet';
     import 'leaflet/dist/leaflet.css';
     import { Link } from 'svelte-routing';
+    import { type ApiResponse, handleFilter, fetchFiltersValues, fetchMapData, fetchAccidentById } from '../../api';
 
     let map: L.Map;
+    let filtersApi2: ApiResponse;
     let filtersName: string[] = [];
     let filtersValue: string[] = [];
-    let selectedFilter1: string = '';
+    let selectedFilter: string = '';
     let selectedFilter2: string = '';
     let franceCoordinates = [46.603354, 1.888334]; // Coordinates for the center of France
 
-    onMount(() => {
+    async function handleFilterValue() {
+        try {
+            filtersApi2 = await fetchFiltersValues(selectedFilter);
+            filtersValue = filtersApi2.filter_values;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async function fetchDataById(id: number) {
+        try {
+            const accidentApi = await fetchAccidentById(id);
+            const data = accidentApi.data;
+            console.log('Data', data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async function handleMapRequest(selectedFilter: string, selectedFilter2: string) {
+        console.log(selectedFilter, selectedFilter2);
+        try {
+            const filterApi = await fetchMapData(selectedFilter, selectedFilter2);
+            const data = filterApi.data;
+            
+            if (Array.isArray(data)) {
+                data.forEach(item => {
+                const marker = L.marker([item.latitude, item.longitude])
+                    .addTo(map)
+                    .bindPopup('ID: ${item.Id}')
+                    .on('click', () => {
+                        fetchDataById(item.Id);
+                    });
+                });
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    onMount(async () => {
+        filtersName = await handleFilter(filtersName);
         map = L.map('map').setView(franceCoordinates, 6);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
     });
+
+    $: {
+        if (selectedFilter) {
+            handleFilterValue();
+        }
+
+        if (selectedFilter && selectedFilter2) {
+            handleMapRequest(selectedFilter, selectedFilter2);
+        }
+    }
 </script>
 
 <div id="map">
@@ -29,7 +82,7 @@
 
 <div class="filter-container">
     <div class="first-filter">
-        <select bind:value={ selectedFilter1 }>
+        <select bind:value={ selectedFilter }>
             <option value="">Select a filter</option>
             {#each filtersName as filterName}
                 <option value={ filterName }>{ filterName }</option>
