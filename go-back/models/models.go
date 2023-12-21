@@ -11,6 +11,7 @@ type DataFilters struct {
 	Surface        string
 	Infrastructure string
 	Trafic         string
+	Situation      string
 	Latitude       float64
 	Longitude      float64
 }

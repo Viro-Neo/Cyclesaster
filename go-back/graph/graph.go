@@ -33,6 +33,8 @@ func ProcessDataForGraph(data []models.DataFilters, filter2 string) interface{} 
 			dataDistribution[accident.Infrastructure]++
 		case "Trafic":
 			dataDistribution[accident.Trafic]++
+		case "Situation":
+			dataDistribution[accident.Situation]++
 		}
 	}
 	return dataDistribution
