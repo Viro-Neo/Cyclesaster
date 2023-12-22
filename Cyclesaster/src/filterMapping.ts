@@ -61,7 +61,7 @@ const monthMapping: { [key: string]: string } = {
     "7": "July",
     "8": "August",
     "9": "September",
-    "10": "Oktober",
+    "10": "October",
     "11": "November",
     "12": "December"
 };

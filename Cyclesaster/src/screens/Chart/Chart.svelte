@@ -36,7 +36,7 @@
             tableData = filterApi.data;
             tableArray = Object.entries(tableData);
             tableArray.forEach((item) => {
-                labels.push(item[0]);
+                labels.push(mapFilterValue(selectedFilter3, item[0]));
                 values.push(item[1]);
             });
             if (ctx) {
@@ -101,7 +101,7 @@
             <select bind:value={ selectedFilter2 }>
                 <option value="">Select the filter's value</option>
                 { #each filtersValue.sort((one, two) => (one > two ? -1 : 1)) as filter }
-                    <option value={ mapFilterValue(selectedFilter, filter) }>{ mapFilterValue(selectedFilter, filter) }</option>
+                    <option value={ filter }>{ mapFilterValue(selectedFilter, filter) }</option>
                 { /each }
             </select>
         </div>
