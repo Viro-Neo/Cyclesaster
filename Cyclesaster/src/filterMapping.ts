@@ -69,7 +69,7 @@ const monthMapping: { [key: string]: string } = {
 export function mapFilterValue(filterName: string, filterValue: string): string {
     if (filterName === "Gender") {
         return genderMapping[filterValue];
-    } else if (filterName === "Traffic") {
+    } else if (filterName === "Trafic") {
         return trafficMapping[filterValue];
     } else if (filterName === "Surface") {
         return surfaceMapping[filterValue];

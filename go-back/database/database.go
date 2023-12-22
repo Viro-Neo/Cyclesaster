@@ -48,7 +48,7 @@ func mapFilterNameToDBName(filterName string) string {
 		return "a.surface"
 	} else if filterName == "Infrastructure" {
 		return "a.infrastructure"
-	} else if filterName == "Traffic" {
+	} else if filterName == "Trafic" {
 		return "a.traffic"
 	} else if filterName == "Situation" {
 		return "a.situation"
