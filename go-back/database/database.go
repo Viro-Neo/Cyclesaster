@@ -60,7 +60,7 @@ func mapFilterNameToDBName(filterName string) string {
 func buildDynamicQuery(filter1Name string) string {
 	f1 := mapFilterNameToDBName(filter1Name)
 	query := fmt.Sprintf("SELECT c.accident_id, c.month, c.year, "+
-		"u.birth_year, c.department, u.gender, a.surface, a.infrastructure, a.traffic, a.situation "+
+		"u.birth_year, c.department, u.gender, a.surface, a.infrastructure, a.traffic, a.situation, "+
 		"c.latitude, c.longitude "+
 		"FROM characteristics c "+
 		"JOIN users u ON c.accident_id = u.accident_id "+
@@ -200,7 +200,7 @@ func FetchAccidentFromDB(db *sql.DB, accident_id int) (models.DataFilters, error
 	var accident models.DataFilters
 
 	query := fmt.Sprintf("SELECT c.accident_id, c.month, c.year, "+
-		"u.birth_year, c.department, u.gender, a.surface, a.infrastructure, a.traffic, a.situation "+
+		"u.birth_year, c.department, u.gender, a.surface, a.infrastructure, a.traffic, a.situation, "+
 		"c.latitude, c.longitude "+
 		"FROM characteristics c "+
 		"JOIN users u ON c.accident_id = u.accident_id "+

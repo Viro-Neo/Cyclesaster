@@ -3,13 +3,27 @@ package routers
 import (
 	"database/sql"
 	"net/http"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"cyclesaster/handlers"
 )
 
 func SetupRouter(db *sql.DB, router *gin.Engine) {
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "DELETE"},
+		AllowHeaders:     []string{"Origin"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "localhost:5173"
+		},
+		MaxAge: 12 * time.Hour,
+	}))
 
 	router.GET("/index", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
