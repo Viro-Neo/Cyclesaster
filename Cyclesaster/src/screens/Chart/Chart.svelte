@@ -100,7 +100,7 @@
         <div >
             <select bind:value={ selectedFilter2 }>
                 <option value="">Select the filter's value</option>
-                { #each filtersValue as filter }
+                { #each filtersValue.sort((one, two) => (one > two ? -1 : 1)) as filter }
                     <option value={ mapFilterValue(selectedFilter, filter) }>{ mapFilterValue(selectedFilter, filter) }</option>
                 { /each }
             </select>
