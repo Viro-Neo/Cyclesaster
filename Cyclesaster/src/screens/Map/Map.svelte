@@ -40,7 +40,10 @@
             
             if (Array.isArray(data)) {
                 data.forEach(item => {
-                const marker = L.marker([item.latitude, item.longitude])
+                console.log("adding marker for item", item);
+                console.log("latitude", item.Latitude);
+                console.log("longitude", item.Longitude);
+                const marker = L.marker([parseFloat(item.Latitude), parseFloat(item.Longitude)])
                     .addTo(map)
                     .bindPopup('ID: ${item.Id}')
                     .on('click', () => {
