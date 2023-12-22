@@ -164,7 +164,7 @@
     <div class="second-filter">
         <select bind:value={ selectedFilter2 }>
             <option value="">Select the filter's value</option>
-                {#each filtersValue as filterValue}
+                {#each filtersValue.sort((one, two) => (one > two ? -1 : 1)) as filterValue}
                     <option value={ mapFilterValue(selectedFilter, filterValue) }>{ mapFilterValue(selectedFilter, filterValue) }</option>
                 {/each}
         </select>
