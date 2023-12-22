@@ -23,11 +23,72 @@
         }
     }
 
-    async function fetchDataById(id: number) {
+    interface AccidentData {
+        "Id": number;
+        "Day": string;
+        "Month": string;
+        "Year": string;
+        "Birth_year": string,
+        "Departement": string;
+        "Gender": string;
+        "Surface": string;
+        "Infrastructure": string;
+        "Trafic": string;
+        "Situation": string;
+        "Latitude": string;
+        "Longitude": string;
+
+        [key: string]: any;
+    }
+
+    function displayData(data, popup: HTMLElement) {
+        popup.innerHTML = '';
+
+        const list = document.createElement('ul');
+
+        function processProperty(key, value, parentElement) {
+            const listItem = document.createElement('li');
+
+            listItem.style.padding = '0';
+            listItem.style.margin = '0';
+
+            if (typeof value === 'object' && value !== null) {
+                const sublist = document.createElement('ul');
+                sublist.style.padding = '0';
+                listItem.innerHTML = `<strong>${key}:</strong>`;
+                listItem.appendChild(sublist);
+
+                for (const subKey in value) {
+                    if (value.hasOwnProperty(subKey)) {
+                        processProperty(subKey, value[subKey], sublist);
+                    }
+                }
+            } else {
+                if (value !== "") {
+                    listItem.innerHTML = `<strong>${key}:</strong> ${mapFilterValue(key, value)}`;
+                } else {
+                    listItem.innerHTML = `<strong>${key}:</strong> ${"Unknown"}`;
+                }                
+            }
+
+            parentElement.appendChild(listItem);
+        }
+
+        for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+                processProperty(key, data[key], list);
+            }
+        }
+
+        popup.appendChild(list);
+    }
+
+
+    async function fetchDataById(id: number, popup: HTMLElement) {
         try {
             const accidentApi = await fetchAccidentById(id);
             const data = accidentApi;
-            console.log('accident Data', data);
+            displayData(data, popup);
         } catch (error) {
             console.log(error);
         }
@@ -44,11 +105,17 @@
                 console.log("adding marker for item", item);
                 console.log("latitude", item.Latitude);
                 console.log("longitude", item.Longitude);
+
+                const popup = document.createElement('div');
+                popup.style.width = '150px';
+                popup.style.height = '315px';
+                popup.style.padding = '2px';
+
                 const marker = L.marker([parseFloat(item.Latitude), parseFloat(item.Longitude)])
                     .addTo(map)
-                    .bindPopup('ID: ${item.Id}')
+                    .bindPopup(popup)
                     .on('click', () => {
-                        fetchDataById(item.Id);
+                        fetchDataById(item.Id, popup);
                     });
                 });
             }
@@ -103,6 +170,8 @@
         </select>
     </div>
 </div>
+
+<div id="accidentData"></div>
 
 <style>
 
