@@ -3,6 +3,7 @@
     import Chart from 'chart.js/auto';
     import { Link } from 'svelte-routing';
     import { type ApiResponse, handleFilter, fetchFiltersValues, fetchGraphData } from '../../api';
+    import { mapFilterValue } from '../../filterMapping';
 
     let filtersApi2: ApiResponse;
     let filtersName: string[] = [];
@@ -100,7 +101,7 @@
             <select bind:value={ selectedFilter2 }>
                 <option value="">Select the filter's value</option>
                 { #each filtersValue as filter }
-                    <option value={ filter }>{ filter }</option>
+                    <option value={ mapFilterValue(selectedFilter, filter) }>{ mapFilterValue(selectedFilter, filter) }</option>
                 { /each }
             </select>
         </div>

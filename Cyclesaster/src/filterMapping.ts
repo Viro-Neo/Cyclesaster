@@ -51,6 +51,21 @@ const situationMapping: { [key: string]: string } = {
     "8": "Other",
 };
 
+const monthMapping: { [key: string]: string } = {
+    "1": "January",
+    "2": "February",
+    "3": "March",
+    "4": "April",
+    "5": "Mai",
+    "6": "June",
+    "7": "July",
+    "8": "August",
+    "9": "September",
+    "10": "Oktober",
+    "11": "November",
+    "12": "December"
+};
+
 export function mapFilterValue(filterName: string, filterValue: string): string {
     if (filterName === "Gender") {
         return genderMapping[filterValue];
@@ -62,6 +77,8 @@ export function mapFilterValue(filterName: string, filterValue: string): string 
         return infrastructureMapping[filterValue];
     } else if (filterName === "Situation") {
         return situationMapping[filterValue];
+    } else if (filterName === "Month") {
+        return monthMapping[filterValue];
     }
     return filterValue;
 }

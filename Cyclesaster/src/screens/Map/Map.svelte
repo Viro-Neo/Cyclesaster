@@ -4,6 +4,7 @@
     import 'leaflet/dist/leaflet.css';
     import { Link } from 'svelte-routing';
     import { type ApiResponse, handleFilter, fetchFiltersValues, fetchMapData, fetchAccidentById } from '../../api';
+    import { mapFilterValue } from '../../filterMapping';
 
     let map: L.Map;
     let filtersApi2: ApiResponse;
@@ -25,8 +26,8 @@
     async function fetchDataById(id: number) {
         try {
             const accidentApi = await fetchAccidentById(id);
-            const data = accidentApi.data;
-            console.log('Data', data);
+            const data = accidentApi;
+            console.log('accident Data', data);
         } catch (error) {
             console.log(error);
         }
@@ -97,7 +98,7 @@
         <select bind:value={ selectedFilter2 }>
             <option value="">Select the filter's value</option>
                 {#each filtersValue as filterValue}
-                    <option value={ filterValue }>{ filterValue }</option>
+                    <option value={ mapFilterValue(selectedFilter, filterValue) }>{ mapFilterValue(selectedFilter, filterValue) }</option>
                 {/each}
         </select>
     </div>
