@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -14,15 +15,25 @@ import (
 )
 
 func GetMapData(c *gin.Context, db *sql.DB) {
-	filterName := c.Query("filter_name")
-	filterValue := c.Query("filter_value")
+	var filters []models.Filters
 
-	if filterName == "" || filterValue == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "filter_name and filter_value are required"})
+	for i := 1; ; i++ {
+		filterName := c.Query(fmt.Sprintf("filter%d_name", i))
+		filterValue := c.Query(fmt.Sprintf("filter%d_value", i))
+
+		if filterName == "" || filterValue == "" {
+			break
+		}
+
+		filters = append(filters, models.Filters{Filter_name: filterName, Filter_value: filterValue})
+	}
+
+	if len(filters) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "filter1_name and filter1_value are required"})
 		return
 	}
 
-	data, err := database.FetchDataFromDB(db, filterName, filterValue)
+	data, err := database.FetchDataFromDB(db, filters)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -36,22 +47,38 @@ func GetMapData(c *gin.Context, db *sql.DB) {
 
 func GetGraphData(c *gin.Context, db *sql.DB) {
 
-	filter1Name := c.Query("filter1_name")
-	filter1Value := c.Query("filter1_value")
-	filter2 := c.Query("filter2")
+	var filters []models.Filters
 
-	if filter2 == "" {
+	for i := 1; ; i++ {
+		filterName := c.Query(fmt.Sprintf("filter%d_name", i))
+		filterValue := c.Query(fmt.Sprintf("filter%d_value", i))
+
+		if filterName == "" || filterValue == "" {
+			break
+		}
+
+		filters = append(filters, models.Filters{Filter_name: filterName, Filter_value: filterValue})
+	}
+
+	if len(filters) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "filter1_name and filter1_value are required"})
+		return
+	}
+
+	perFilter := c.Query("perFilter")
+
+	if perFilter == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "filter2 is required"})
 		return
 	}
 
-	data, err := database.FetchDataFromDB(db, filter1Name, filter1Value)
+	data, err := database.FetchDataFromDB(db, filters)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	graphData := graph.ProcessDataForGraph(data, filter2)
+	graphData := graph.ProcessDataForGraph(data, perFilter)
 
 	c.JSON(http.StatusOK, gin.H{"data": graphData})
 }

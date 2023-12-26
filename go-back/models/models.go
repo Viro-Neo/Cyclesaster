@@ -1,5 +1,10 @@
 package models
 
+type Filters struct {
+	Filter_name  string
+	Filter_value string
+}
+
 type DataFilters struct {
 	Id             int
 	Day            string
