@@ -168,15 +168,6 @@
         </select>
     </div>
 
-    <div class="year-filter">
-        <select bind:value= { selectedYear }>
-            <option value="">Select a year</option>
-            {#each yearsFilter.sort((one, two) => (one > two ? -1 : 1)) as filterValue}
-                <option value={ filterValue }>{ filterValue }</option>
-            {/each}
-        </select>
-    </div>
-
     <div class="second-filter">
         <select bind:value={ selectedFilter2 }>
             <option value="">Select the filter's value</option>
@@ -185,9 +176,16 @@
                 {/each}
         </select>
     </div>
-</div>
 
-<div id="accidentData"></div>
+    <div class="year-filter">
+        <select bind:value= { selectedYear }>
+            <option value="">Select a year</option>
+            {#each yearsFilter.sort((one, two) => (one > two ? -1 : 1)) as filterValue}
+                <option value={ filterValue }>{ filterValue }</option>
+            {/each}
+        </select>
+    </div>
+</div>
 
 <style>
 

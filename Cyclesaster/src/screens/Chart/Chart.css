@@ -7,8 +7,9 @@
 
 /* Add this CSS to position the filters */
 .filter-container {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
     width: 50%;
     margin: 0 auto;
     border: 1px solid black;
@@ -20,6 +21,11 @@
 }
 
 .second-filter {
+    position: relative;
+    margin: 10px;
+}
+
+.year-filter {
     position: relative;
     margin: 10px;
 }

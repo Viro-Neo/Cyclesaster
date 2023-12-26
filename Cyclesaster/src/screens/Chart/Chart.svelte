@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import Chart from 'chart.js/auto';
     import { Link } from 'svelte-routing';
     import { type ApiResponse, handleFilter, fetchFiltersValues, fetchGraphData } from '../../api';
@@ -7,9 +7,7 @@
 
     let filtersApi2: ApiResponse;
     let filtersName: string[] = [];
-    let filtersValue: string[] = [];
-    let selectedFilter: string = '';
-    let selectedFilter2: string = '';
+    let filters: { name: string, value: string, values: string[ ]}[] = [];
     let selectedFilter3: string = '';
 
     let tableData: Object;
@@ -19,28 +17,33 @@
     const labels: string[] = [];
     const values: number[] = [];
 
-    async function handleFilterValue() {
+    async function handleFilterValue(index: number) {
         try {
-            filtersApi2 = await fetchFiltersValues(selectedFilter);
-            filtersValue = filtersApi2.filter_values;
+            const filterValues = await fetchFiltersValues(filters[index].name);
+            filters[index].values = filterValues.filter_values;
         } catch (error) {
             console.log(error);
         }
     }
 
-    export async function handleGraphRequest(selectedFilter: string, selectedFilter2: string, selectedFilter3: string) {
+    export async function handleGraphRequest() {
         try {
-            const filterApi = await fetchGraphData(selectedFilter, selectedFilter2, selectedFilter3);
-            const ctx = document.getElementById('chart');
+            const filterApi = await fetchGraphData(filters, selectedFilter3);
+            const canvas = document.getElementById('chart') as HTMLCanvasElement;
 
             tableData = filterApi.data;
             tableArray = Object.entries(tableData);
+            labels.length = 0;
+            values.length = 0;
             tableArray.forEach((item) => {
                 labels.push(mapFilterValue(selectedFilter3, item[0]));
                 values.push(item[1]);
             });
-            if (ctx) {
-                chart = new Chart(ctx, {
+            if (canvas) {
+                if (chart) {
+                    chart.destroy();
+                }
+                chart = new Chart(canvas, {
                     type: 'bar',
                     data: {
                         labels,
@@ -65,19 +68,34 @@
         }
     }
 
+    function addFilter() {
+        console.log('add filter');
+        filters = [...filters, { name: '', value: '', values: [] }];
+        console.log(filters);
+    }
+
     onMount(async () => {
-        filtersName = await handleFilter(filtersName);
+        filtersName = await handleFilter();
+        console.log(filtersName);
+    });
+
+    onDestroy(() => {
+        if (chart) {
+            chart.destroy();
+        }
     });
 
     $: {
-        if (selectedFilter) {
-            handleFilterValue();
-        }
-
-        if (selectedFilter && selectedFilter2 && selectedFilter3) {
-            handleGraphRequest(selectedFilter, selectedFilter2, selectedFilter3);
+    for (let index = 0; index < filters.length; index++) {
+        if (filters[index].name && !filters[index].values.length) {
+            handleFilterValue(index);
         }
     }
+
+    if (filters.length >= 1 && selectedFilter3) {
+        handleGraphRequest();
+    }
+}
 
 </script>
 
@@ -87,25 +105,32 @@
 </div>
 
 <div class="filter-container">
-    <div class="first-filter">
-        <div >
-            <select bind:value={ selectedFilter }>
-                <option value="">Select a filter</option>
-                { #each filtersName as filter }
-                    <option value={ filter }>{ filter }</option>
-                { /each }
-            </select>
-        </div>
+    {#each filters as filter, index}
+        <div class="filter">
+            <div>
+                <select bind:value={filter.name}>
+                    <option value="">Select a filter</option>
+                    {#each filtersName as filterName}
+                        <option value={filterName}>{filterName}</option>
+                    {/each}
+                </select>
+            </div>
 
-        <div >
-            <select bind:value={ selectedFilter2 }>
-                <option value="">Select the filter's value</option>
-                { #each filtersValue.sort((one, two) => (one > two ? -1 : 1)) as filter }
-                    <option value={ filter }>{ mapFilterValue(selectedFilter, filter) }</option>
-                { /each }
-            </select>
+            <div>
+                <select bind:value={filter.value}>
+                    <option value="">Select the filter's value</option>
+                    {#each (filter.values || []).sort((one, two) => (one > two ? -1 : 1)) as filterValue}
+                        <option value={filterValue}>{mapFilterValue(filter.name, filterValue)}</option>
+                    {/each}
+                </select>
+            </div>
+            {#if index > 0}
+            <button on:click={() => { filters = filters.filter((_, i) => i !== index); }}>Remove Filter</button>
+            {/if}
         </div>
-    </div>
+    {/each}
+
+    <button on:click={addFilter}>{`Add Filter`}</button>
 
     <div class="second-filter">
         <select bind:value={ selectedFilter3 }>

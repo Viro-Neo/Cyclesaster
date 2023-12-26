@@ -57,7 +57,7 @@ func mapFilterNameToDBName(filterName string) string {
 	return ""
 }
 
-func buildDynamicQuery(filters []models.Filters) string {
+func buildDynamicQuery(filters []models.Filters, perFilter string) string {
 
 	query := "SELECT c.accident_id, c.longitude, c.latitude"
 
@@ -66,6 +66,10 @@ func buildDynamicQuery(filters []models.Filters) string {
 			continue
 		}
 		query += fmt.Sprintf(", %s", mapFilterNameToDBName(filter.Filter_name))
+	}
+
+	if perFilter != "" {
+		query += fmt.Sprintf(", %s", mapFilterNameToDBName(perFilter))
 	}
 
 	query += " FROM characteristics c JOIN users u ON c.accident_id = u.accident_id " +
@@ -78,16 +82,6 @@ func buildDynamicQuery(filters []models.Filters) string {
 		}
 		query += fmt.Sprintf("%s = %s", mapFilterNameToDBName(filter.Filter_name), filter.Filter_value)
 	}
-
-	/*f1 := mapFilterNameToDBName(filter1Name)
-	query := fmt.Sprintf("SELECT c.accident_id, c.month, c.year, "+
-		"u.birth_year, c.department, u.gender, a.surface, a.infrastructure, a.traffic, a.situation, "+
-		"c.latitude, c.longitude "+
-		"FROM characteristics c "+
-		"JOIN users u ON c.accident_id = u.accident_id "+
-		"JOIN area a ON c.accident_id = a.accident_id "+
-		"JOIN vehicles v ON c.accident_id = v.accident_id "+
-		"WHERE %s = $1", f1)*/
 
 	return query
 }
@@ -159,76 +153,12 @@ func scanRows(rows *sql.Rows) ([]models.DataFilters, error) {
 	return accidents, nil
 }
 
-/*func scanRows(rows *sql.Rows) ([]models.DataFilters, error) {
-	var accidents []models.DataFilters
-
-	for rows.Next() {
-		var accident models.DataFilters
-		var id, month, year, birth_year, department, gender, surface, infrastructure, trafic, situation sql.NullString
-		var latitude, longitude sql.NullFloat64
-		err := rows.Scan(&id, &month, &year, &birth_year, &department, &gender,
-			&surface, &infrastructure, &trafic, &situation, &latitude, &longitude)
-		if err != nil {
-			fmt.Println("error is ", err)
-			return nil, err
-		}
-
-		if id.Valid {
-			accident.Id, _ = strconv.Atoi(id.String)
-		}
-		if month.Valid {
-			accident.Month = month.String
-		}
-		if year.Valid {
-			accident.Year = year.String
-		}
-		if birth_year.Valid {
-			accident.Birth_year = birth_year.String
-		}
-		if department.Valid {
-			if department.String == "201" {
-				accident.Department = "2A"
-			} else if department.String == "202" {
-				accident.Department = "2B"
-			} else {
-				accident.Department = department.String
-			}
-		}
-		if gender.Valid {
-			accident.Gender = gender.String
-		}
-		if surface.Valid {
-			accident.Surface = surface.String
-		}
-		if infrastructure.Valid {
-			accident.Infrastructure = infrastructure.String
-		}
-		if trafic.Valid {
-			accident.Trafic = trafic.String
-		}
-		if latitude.Valid {
-			accident.Latitude = latitude.Float64
-		}
-		if longitude.Valid {
-			accident.Longitude = longitude.Float64
-		}
-		if situation.Valid {
-			accident.Situation = situation.String
-		}
-
-		fmt.Println("adding accident ", accident)
-		accidents = append(accidents, accident)
-	}
-
-	return accidents, nil
-}*/
-
-func FetchDataFromDB(db *sql.DB, filters []models.Filters) ([]models.DataFilters, error) {
+func FetchDataFromDB(db *sql.DB, filters []models.Filters, perFilter string) ([]models.DataFilters, error) {
 
 	fmt.Println("Fetching data from DB")
 	var accidents []models.DataFilters
 
-	query := buildDynamicQuery(filters)
+	query := buildDynamicQuery(filters, perFilter)
 
 	fmt.Println("query is ", query)
 

@@ -33,7 +33,7 @@ func GetMapData(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	data, err := database.FetchDataFromDB(db, filters)
+	data, err := database.FetchDataFromDB(db, filters, "")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -67,12 +67,14 @@ func GetGraphData(c *gin.Context, db *sql.DB) {
 
 	perFilter := c.Query("perFilter")
 
+	fmt.Println("perFilter is ", perFilter)
+
 	if perFilter == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "filter2 is required"})
 		return
 	}
 
-	data, err := database.FetchDataFromDB(db, filters)
+	data, err := database.FetchDataFromDB(db, filters, perFilter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
