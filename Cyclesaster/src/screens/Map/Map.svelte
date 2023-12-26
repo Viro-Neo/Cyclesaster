@@ -10,8 +10,11 @@
     let filtersApi2: ApiResponse;
     let filtersName: string[] = [];
     let filtersValue: string[] = [];
+    let yearApi: ApiResponse;
+    let yearsFilter: string[] = [];
     let selectedFilter: string = '';
     let selectedFilter2: string = '';
+    let selectedYear: string = '';
     let franceCoordinates = [46.603354, 1.888334]; // Coordinates for the center of France
 
     async function handleFilterValue() {
@@ -97,7 +100,9 @@
     async function handleMapRequest(selectedFilter: string, selectedFilter2: string) {
         console.log(selectedFilter, selectedFilter2);
         try {
-            const filterApi = await fetchMapData(selectedFilter, selectedFilter2);
+            console.log("fetching map data");
+            console.log("selectedYear", selectedYear)
+            const filterApi = await fetchMapData(selectedFilter, selectedFilter2, selectedYear);
             const data = filterApi.data;
             
             if (Array.isArray(data)) {
@@ -126,6 +131,8 @@
 
     onMount(async () => {
         filtersName = await handleFilter(filtersName);
+        yearApi = await fetchFiltersValues('Year');
+        yearsFilter = yearApi.filter_values;
         map = L.map('map').setView(franceCoordinates, 6);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -138,7 +145,7 @@
             handleFilterValue();
         }
 
-        if (selectedFilter && selectedFilter2) {
+        if (selectedFilter && selectedFilter2 && selectedYear) {
             handleMapRequest(selectedFilter, selectedFilter2);
         }
     }
@@ -161,11 +168,20 @@
         </select>
     </div>
 
+    <div class="year-filter">
+        <select bind:value= { selectedYear }>
+            <option value="">Select a year</option>
+            {#each yearsFilter.sort((one, two) => (one > two ? -1 : 1)) as filterValue}
+                <option value={ filterValue }>{ filterValue }</option>
+            {/each}
+        </select>
+    </div>
+
     <div class="second-filter">
         <select bind:value={ selectedFilter2 }>
             <option value="">Select the filter's value</option>
                 {#each filtersValue.sort((one, two) => (one > two ? -1 : 1)) as filterValue}
-                    <option value={ mapFilterValue(selectedFilter, filterValue) }>{ mapFilterValue(selectedFilter, filterValue) }</option>
+                    <option value={ filterValue }>{ mapFilterValue(selectedFilter, filterValue) }</option>
                 {/each}
         </select>
     </div>

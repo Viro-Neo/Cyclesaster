@@ -29,11 +29,11 @@ export const fetchFiltersValues = async (filter: string): Promise<ApiResponse> =
 }
 
 export const fetchGraphData = async (filter: string, filter2: string, filter3: string): Promise<ApiResponse> => {
-    return await fetchData(`/graph?filter1_name=${filter}&filter1_value=${filter2}&filter2=${filter3}`);
+    return await fetchData(`/graph?filter1_name=${filter}&filter1_value=${filter2}&perFilter=${filter3}`);
 }
 
-export const fetchMapData = async (filter: string, filter2: string): Promise<ApiResponse> => {
-    return await fetchData(`/map?filter_name=${filter}&filter_value=${filter2}`);
+export const fetchMapData = async (filter: string, filter2: string, yearFilter: string): Promise<ApiResponse> => {
+    return await fetchData(`/map?filter1_name=${filter}&filter1_value=${filter2}&filter2_name=Year&filter2_value=${yearFilter}`);
 }
 
 export const fetchAccidentById = async (id: number): Promise<ApiResponse> => {
