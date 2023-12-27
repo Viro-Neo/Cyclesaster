@@ -38,6 +38,8 @@ func mapFilterNameToDBName(filterName string) string {
 		return "u.birth_year"
 	} else if filterName == "Department" {
 		return "c.department"
+	} else if filterName == "Day" {
+		return "c.day"
 	} else if filterName == "Month" {
 		return "c.month"
 	} else if filterName == "Year" {
@@ -80,7 +82,7 @@ func buildDynamicQuery(filters []models.Filters, perFilter string) string {
 		if i > 0 {
 			query += " AND "
 		}
-		query += fmt.Sprintf("%s = %s", mapFilterNameToDBName(filter.Filter_name), filter.Filter_value)
+		query += fmt.Sprintf("%s = '%s'", mapFilterNameToDBName(filter.Filter_name), filter.Filter_value)
 	}
 
 	return query
@@ -114,7 +116,7 @@ func scanRows(rows *sql.Rows) ([]models.DataFilters, error) {
 			}
 
 			switch columns[i] {
-			case "id":
+			case "accident_id":
 				accident.Id, _ = strconv.Atoi(string(value))
 			case "month":
 				accident.Month = string(value)

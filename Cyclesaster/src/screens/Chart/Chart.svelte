@@ -5,7 +5,6 @@
     import { type ApiResponse, handleFilter, fetchFiltersValues, fetchGraphData } from '../../api';
     import { mapFilterValue } from '../../filterMapping';
 
-    let filtersApi2: ApiResponse;
     let filtersName: string[] = [];
     let filters: { name: string, value: string, values: string[ ]}[] = [];
     let selectedFilter3: string = '';
