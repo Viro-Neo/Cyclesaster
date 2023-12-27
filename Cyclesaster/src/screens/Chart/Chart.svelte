@@ -85,16 +85,16 @@
     });
 
     $: {
-    for (let index = 0; index < filters.length; index++) {
-        if (filters[index].name && !filters[index].values.length) {
-            handleFilterValue(index);
+        for (let index = 0; index < filters.length; index++) {
+            if (filters[index].name && !filters[index].values.length) {
+                handleFilterValue(index);
+            }
+        }
+
+        if (filters.length >= 1 && selectedFilter3) {
+            handleGraphRequest();
         }
     }
-
-    if (filters.length >= 1 && selectedFilter3) {
-        handleGraphRequest();
-    }
-}
 
 </script>
 

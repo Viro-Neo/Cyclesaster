@@ -33,8 +33,9 @@ export const fetchGraphData = async (filters: { name: string; value: string}[], 
     return await fetchData(`/graph?${filterParams}&perFilter=${perFilter}`);
 }
 
-export const fetchMapData = async (filter: string, filter2: string, yearFilter: string): Promise<ApiResponse> => {
-    return await fetchData(`/map?filter1_name=${filter}&filter1_value=${filter2}&filter2_name=Year&filter2_value=${yearFilter}`);
+export const fetchMapData = async (filters: { name: string; value: string}[]): Promise<ApiResponse> => {
+    const filterParams = filters.map((filter, index) => `filter${index + 1}_name=${filter.name}&filter${index + 1}_value=${filter.value}`).join('&');
+    return await fetchData(`/map?${filterParams}`);
 }
 
 export const fetchAccidentById = async (id: number): Promise<ApiResponse> => {

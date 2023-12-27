@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import L from 'leaflet';
     import 'leaflet/dist/leaflet.css';
     import { Link } from 'svelte-routing';
@@ -7,41 +7,18 @@
     import { mapFilterValue } from '../../filterMapping';
 
     let map: L.Map;
-    let filtersApi2: ApiResponse;
     let filtersName: string[] = [];
-    let filtersValue: string[] = [];
-    let yearApi: ApiResponse;
-    let yearsFilter: string[] = [];
-    let selectedFilter: string = '';
-    let selectedFilter2: string = '';
-    let selectedYear: string = '';
+    let filters: { name: string, value: string, values: string[] }[] = [];
     let franceCoordinates = [46.603354, 1.888334]; // Coordinates for the center of France
+    let shouldHandleMapRequest = false;
 
-    async function handleFilterValue() {
+    async function handleFilterValue(index: number) {
         try {
-            filtersApi2 = await fetchFiltersValues(selectedFilter);
-            filtersValue = filtersApi2.filter_values;
+            const filterValues = await fetchFiltersValues(filters[index].name);
+            filters[index].values = filterValues.filter_values;
         } catch (error) {
             console.log(error);
         }
-    }
-
-    interface AccidentData {
-        "Id": number;
-        "Day": string;
-        "Month": string;
-        "Year": string;
-        "Birth_year": string,
-        "Departement": string;
-        "Gender": string;
-        "Surface": string;
-        "Infrastructure": string;
-        "Trafic": string;
-        "Situation": string;
-        "Latitude": string;
-        "Longitude": string;
-
-        [key: string]: any;
     }
 
     function displayData(data, popup: HTMLElement) {
@@ -97,12 +74,9 @@
         }
     }
 
-    async function handleMapRequest(selectedFilter: string, selectedFilter2: string) {
-        console.log(selectedFilter, selectedFilter2);
+    async function handleMapRequest() {
         try {
-            console.log("fetching map data");
-            console.log("selectedYear", selectedYear)
-            const filterApi = await fetchMapData(selectedFilter, selectedFilter2, selectedYear);
+            const filterApi = await fetchMapData(filters);
             const data = filterApi.data;
             
             if (Array.isArray(data)) {
@@ -129,10 +103,13 @@
         }
     }
 
+    function addFilter() {
+        filters = [...filters, { name: '', value: '', values: [] }];
+    }
+
     onMount(async () => {
-        filtersName = await handleFilter(filtersName);
-        yearApi = await fetchFiltersValues('Year');
-        yearsFilter = yearApi.filter_values;
+        filtersName = await handleFilter();
+        filters = [{ name: 'Year', value: '', values: [] }];
         map = L.map('map').setView(franceCoordinates, 6);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -140,15 +117,31 @@
         }).addTo(map);
     });
 
+    onDestroy(() => {
+        if (map) {
+            map.remove();
+        }
+    });
+
     $: {
-        if (selectedFilter) {
-            handleFilterValue();
+        for (let index = 0; index < filters.length; index++) {
+            if (filters[index].name && !filters[index].values.length) {
+                handleFilterValue(index);
+            }
         }
 
-        if (selectedFilter && selectedFilter2 && selectedYear) {
-            handleMapRequest(selectedFilter, selectedFilter2);
+        if (filters.length >= 2) {
+            shouldHandleMapRequest = true;
+            filters.forEach(element => {
+                if (element.value == "") {
+                    shouldHandleMapRequest = false;
+                }
+            });
+            if (shouldHandleMapRequest)
+                handleMapRequest();
         }
     }
+
 </script>
 
 <div id="map">
@@ -159,32 +152,32 @@
 </div>
 
 <div class="filter-container">
-    <div class="first-filter">
-        <select bind:value={ selectedFilter }>
-            <option value="">Select a filter</option>
-            {#each filtersName as filterName}
-                <option value={ filterName }>{ filterName }</option>
-            {/each}
-        </select>
-    </div>
+    {#each filters as filter, index}
+        <div class="filter">
+            <div>
+                <select bind:value={filter.name}>
+                    <option value="">Select a filter</option>
+                    {#each filtersName as filterName}
+                        <option value={filterName}>{filterName}</option>
+                    {/each}
+                </select>
+            </div>
 
-    <div class="second-filter">
-        <select bind:value={ selectedFilter2 }>
-            <option value="">Select the filter's value</option>
-                {#each filtersValue.sort((one, two) => (one > two ? -1 : 1)) as filterValue}
-                    <option value={ filterValue }>{ mapFilterValue(selectedFilter, filterValue) }</option>
-                {/each}
-        </select>
-    </div>
+            <div>
+                <select bind:value={filter.value}>
+                    <option value="">Select the filter's value</option>
+                    {#each (filter.values || []).sort((one, two) => (one > two ? -1 : 1)) as filterValue}
+                        <option value={filterValue}>{mapFilterValue(filter.name, filterValue)}</option>
+                    {/each}
+                </select>
+            </div>
+            {#if index > 0}
+            <button on:click={() => { filters = filters.filter((_, i) => i !== index); }}>Remove Filter</button>
+            {/if}
+        </div>
+    {/each}
 
-    <div class="year-filter">
-        <select bind:value= { selectedYear }>
-            <option value="">Select a year</option>
-            {#each yearsFilter.sort((one, two) => (one > two ? -1 : 1)) as filterValue}
-                <option value={ filterValue }>{ filterValue }</option>
-            {/each}
-        </select>
-    </div>
+    <button on:click={addFilter}>{`Add Filter`}</button>
 </div>
 
 <style>
