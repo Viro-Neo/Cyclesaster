@@ -182,6 +182,33 @@
 
 <style>
 
-    @import './Map.css';
+    #map {
+        height: 70vh; /* Use 70% of the viewport height */
+        width: 100%; /* Use 70% of the viewport width */
+        float: left; /* Float the map to the left */
+    }
+
+    .button-container {
+        width: 30%; /* Take 30% of the viewport width */
+        float: right; /* Float the container to the right */
+        padding: 20px; /* Add padding for spacing */
+    }
+
+    .filter-container {
+        width: 30%; /* Take 30% of the viewport width */
+        float: right; /* Float the container to the right */
+        padding: 20px; /* Add padding for spacing */
+        border: 1px solid black;
+        border-radius: 10px;
+    }
+
+    .filter {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
 
 </style>

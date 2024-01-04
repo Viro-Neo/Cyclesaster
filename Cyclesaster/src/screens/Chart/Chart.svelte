@@ -100,6 +100,9 @@
 
 <div id="chart-container">
     <canvas id="chart"></canvas>
+</div>
+
+<div class="button-container">
     <Link to="/map">Go to Map</Link>
 </div>
 
@@ -129,7 +132,7 @@
         </div>
     {/each}
 
-    <button on:click={addFilter}>{`Add Filter`}</button>
+    <button class='button-add' on:click={addFilter}>{`Add Filter`}</button>
 
     <div class="second-filter">
         <select bind:value={ selectedFilter3 }>
@@ -143,6 +146,39 @@
 
 <style>
 
-    @import './Chart.css';
+    /* Set a specific height and width for the chart container */
+    #chart-container {
+        width: 100%; /* Adjust the width as needed */
+        height: 30lh; /* Adjust the height as needed */
+        margin: 0 auto; /* Center the container horizontally */
+    }
+
+    .button-container {
+        width: 30%;
+        float: left;
+        padding: 20px;
+    }
+
+    /* Add this CSS to position the filters */
+    .filter-container {
+        display: grid;
+        gap: 10px;
+        width: 50%;
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .second-filter {
+        position: relative;
+        margin: 10px;
+        width: 100%;
+    }
+
+    .button-add {
+        position: relative;
+        margin: 10px;
+        width: 10%;
+    }
 
 </style>

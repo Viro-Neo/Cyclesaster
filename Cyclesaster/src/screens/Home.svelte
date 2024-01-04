@@ -6,10 +6,28 @@
 
 <div>
     <h1>Welcome!</h1>
-    <nav>
-        <ul>
-            <li><Link to="/map">Go to Map</Link></li>
-            <li><Link to="/chart">Go to Chart</Link></li>
-        </ul>
-    </nav>
+    <div>
+        <li><Link to="/map">Go to Map</Link></li>
+        <li><Link to="/chart">Go to Chart</Link></li>
+    </div>
 </div>
+
+<style>
+    div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 50vh;
+    }
+
+    h1 {
+        font-size: 3rem;
+        margin-bottom: 2rem;
+    }
+
+    li {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+</style>
