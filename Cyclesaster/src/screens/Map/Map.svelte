@@ -75,6 +75,14 @@
     }
 
     async function handleMapRequest() {
+        if (filters.length < 2) {
+            return;
+        }
+        filters.forEach(element => {
+            if (element.value == "") {
+                return;
+            }
+        });
         try {
             const filterApi = await fetchMapData(filters);
             const data = filterApi.data;
@@ -129,17 +137,6 @@
                 handleFilterValue(index);
             }
         }
-
-        if (filters.length >= 2) {
-            shouldHandleMapRequest = true;
-            filters.forEach(element => {
-                if (element.value == "") {
-                    shouldHandleMapRequest = false;
-                }
-            });
-            if (shouldHandleMapRequest)
-                handleMapRequest();
-        }
     }
 
 </script>
@@ -178,6 +175,10 @@
     {/each}
 
     <button on:click={addFilter}>{`Add Filter`}</button>
+
+    {#if filters.length >= 2}
+        <button on:click={handleMapRequest}>Search</button>
+    {/if}
 </div>
 
 <style>
